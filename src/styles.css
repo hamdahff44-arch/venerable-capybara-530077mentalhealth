@@ -1,0 +1,94 @@
+@import "tailwindcss" source("../");
+
+@theme {
+  --color-cream: #fdf8f1;
+  --color-ivory: #fffcf7;
+  --color-beige: #efe3d3;
+  --color-sand: #dcc7ad;
+  --color-blush: #f6d9dc;
+  --color-rose: #e7a9b3;
+  --color-rosewood: #b8616f;
+  --color-plum: #6f3b47;
+  --color-sage: #a9bfa3;
+  --color-sage-light: #e3ecdf;
+  --color-moss: #5f7a5a;
+  --color-ink: #4a3a38;
+
+  --font-sans: 'Tajawal', system-ui, sans-serif;
+  --font-display: 'El Messiri', 'Tajawal', serif;
+  --font-hand: 'Aref Ruqaa', 'El Messiri', serif;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-breathe: breathe 12s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+  50% { transform: translateY(-8px) rotate(var(--r, 0deg)); }
+}
+
+/* 4s in, 4s hold, 4s out */
+@keyframes breathe {
+  0% { transform: scale(0.62); }
+  33% { transform: scale(1); }
+  66% { transform: scale(1); }
+  100% { transform: scale(0.62); }
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+}
+
+body {
+  margin: 0;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.8;
+}
+
+::selection {
+  background: var(--color-blush);
+  color: var(--color-plum);
+}
+
+.paper {
+  background-color: var(--color-cream);
+  background-image:
+    radial-gradient(circle at 15% 20%, rgb(246 217 220 / 0.45), transparent 40%),
+    radial-gradient(circle at 85% 70%, rgb(227 236 223 / 0.6), transparent 45%);
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.field {
+  width: 100%;
+  border-radius: 1rem;
+  border: 1.5px solid var(--color-beige);
+  background: var(--color-ivory);
+  padding: 0.8rem 1rem;
+  font: inherit;
+  color: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.field:focus {
+  outline: none;
+  border-color: var(--color-rose);
+  box-shadow: 0 0 0 4px rgb(246 217 220 / 0.7);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .reveal { opacity: 1; transform: none; }
+}
