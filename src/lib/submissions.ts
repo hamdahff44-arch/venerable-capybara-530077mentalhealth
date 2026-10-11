@@ -10,6 +10,7 @@ import {
   MESSAGE_MAX,
   NAME_MAX,
   PARTICIPANT_TYPES,
+  PUBLIC_STATUSES,
   STATUSES,
   WALL_CATEGORIES,
 } from './options'
@@ -70,7 +71,7 @@ export const submitEntry = createServerFn({ method: 'POST' })
       category: data.category,
       recipient: data.category === 'gratitude' ? data.recipient : null,
       message: data.message,
-      status: 'pending',
+      status: 'approved',
     })
     return { ok: true }
   })
@@ -81,12 +82,11 @@ export const getPublishedEntries = createServerFn({ method: 'GET' }).handler(asy
     .from(submissions)
     .where(
       and(
-        eq(submissions.status, 'approved'),
-        inArray(submissions.category, [...WALL_CATEGORIES, ...GRATITUDE_CATEGORIES]),
+        inArray(submissions.status, PUBLIC_STATUSES),
+        inArray(submissions.category, WALL_CATEGORIES),
       ),
     )
-    .orderBy(desc(submissions.reviewedAt))
-    .limit(120)
+    .orderBy(desc(submissions.createdAt), desc(submissions.id))
   const entries = rows.map(toPublic)
   return {
     wall: entries.filter((e) => (WALL_CATEGORIES as string[]).includes(e.category)),
@@ -100,7 +100,13 @@ export const sendHeart = createServerFn({ method: 'POST' })
     const [row] = await db
       .update(submissions)
       .set({ hearts: sql`${submissions.hearts} + 1` })
-      .where(and(eq(submissions.id, data.id), eq(submissions.status, 'approved')))
+      .where(
+        and(
+          eq(submissions.id, data.id),
+          inArray(submissions.status, PUBLIC_STATUSES),
+          inArray(submissions.category, WALL_CATEGORIES),
+        ),
+      )
       .returning({ hearts: submissions.hearts })
     return { hearts: row?.hearts ?? 0 }
   })

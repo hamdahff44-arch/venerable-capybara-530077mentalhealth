@@ -16,7 +16,7 @@ export const CATEGORIES = {
 } as const
 
 export const STATUSES = {
-  pending: 'بانتظار المراجعة',
+  pending: 'منشورة — لم تُراجع بعد',
   approved: 'منشورة',
   rejected: 'غير منشورة',
 } as const
@@ -25,10 +25,9 @@ export type ParticipantType = keyof typeof PARTICIPANT_TYPES
 export type Category = keyof typeof CATEGORIES
 export type Status = keyof typeof STATUSES
 
-// Categories that may appear publicly after approval. Activity ideas and
-// suggestions are only ever visible to the administrator.
-export const WALL_CATEGORIES: Category[] = ['kind_word', 'encouragement']
+export const WALL_CATEGORIES: Category[] = Object.keys(CATEGORIES) as Category[]
 export const GRATITUDE_CATEGORIES: Category[] = ['gratitude']
+export const PUBLIC_STATUSES: Status[] = ['pending', 'approved']
 
 export const MESSAGE_MAX = 600
 export const NAME_MAX = 40

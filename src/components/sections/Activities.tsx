@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Check } from 'lucide-react'
 import { SectionTitle } from '../Decor'
+import type { PublicEntry } from '../../lib/submissions'
+import { PARTICIPANT_TYPES } from '../../lib/options'
+import { byline } from './shared'
 
 const groups = [
   {
@@ -107,7 +110,7 @@ function KindnessChallenge() {
   )
 }
 
-export function Activities() {
+export function Activities({ entries }: { entries: PublicEntry[] }) {
   return (
     <section id="activities" className="px-4 py-24 sm:px-6">
       <div className="mx-auto max-w-6xl">
@@ -129,6 +132,22 @@ export function Activities() {
               </ul>
             </article>
           ))}
+        </div>
+        <div className="mt-10">
+          <h3 className="reveal font-display text-2xl font-bold text-plum">أفكار أنشطة من مشاركاتكنّ</h3>
+          <p className="reveal mt-2 text-ink/70">تُنشر أفكاركنّ تلقائيًا وفورًا دون انتظار موافقة الإدارة.</p>
+          {entries.length === 0 ? (
+            <p className="reveal mt-4 rounded-3xl bg-ivory p-6 text-ink/70 ring-1 ring-beige">لا توجد أفكار أنشطة بعد. شاركي فكرتك لتظهر هنا وعلى جدار الأثر الطيب.</p>
+          ) : (
+            <div className="mt-5 grid gap-5 sm:grid-cols-2">
+              {entries.map((entry) => (
+                <article key={entry.id} className="reveal rounded-3xl bg-ivory p-6 ring-1 ring-beige">
+                  <p className="whitespace-pre-line leading-8 text-ink">{entry.message}</p>
+                  <p className="mt-4 text-sm text-ink/60">{byline(entry, PARTICIPANT_TYPES)}</p>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
         <div className="mt-10">
           <KindnessChallenge />

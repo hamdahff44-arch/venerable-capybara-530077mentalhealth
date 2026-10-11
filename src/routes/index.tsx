@@ -37,7 +37,7 @@ function Home() {
         <Wall entries={wall} />
         <Gratitude entries={gratitude} />
         <Participate />
-        <Activities />
+        <Activities entries={wall.filter((entry) => entry.category === 'activity_idea')} />
         <Privacy />
       </main>
       <Footer />

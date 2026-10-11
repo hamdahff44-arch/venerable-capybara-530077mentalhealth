@@ -41,7 +41,7 @@ export function Wall({ entries }: { entries: PublicEntry[] }) {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgb(239_227_211/0.6)_1px,transparent_1px)] [background-size:22px_22px]" />
       <div className="relative mx-auto max-w-6xl">
         <SectionTitle eyebrow="جدار الأثر الطيب" title="كلمات تُزهر في القلوب">
-          كلمات طيبة ورسائل تشجيع وأفكار إيجابية من طالباتنا ومعلماتنا، تُنشر بعد مراجعة الإدارة.
+          كلمات طيبة ورسائل تشجيع وامتنان وأفكار أنشطة واقتراحات من طالباتنا ومعلماتنا، تُنشر تلقائيًا وفورًا دون انتظار موافقة الإدارة.
         </SectionTitle>
 
         <div className="reveal mb-8 flex flex-wrap items-center justify-center gap-2">
@@ -66,7 +66,7 @@ export function Wall({ entries }: { entries: PublicEntry[] }) {
           <div className="reveal mx-auto max-w-3xl rounded-[2rem] bg-ivory/90 p-8 text-center ring-1 ring-beige">
             <p className="font-display text-xl font-bold text-plum">الجدار ينتظر كلماتكم الأولى 🌱</p>
             <p className="mt-2 text-ink/70">
-              لم تُنشر مشاركات بعد. كوني أول من يترك أثرًا طيبًا! هذه عبارات من المبادرة لتلهمك:
+              لا توجد مشاركات في هذا التصنيف بعد. شاركي ليُنشر أثرك تلقائيًا وفورًا! هذه عبارات من المبادرة لتلهمك:
             </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               {STARTERS.map((s, i) => (

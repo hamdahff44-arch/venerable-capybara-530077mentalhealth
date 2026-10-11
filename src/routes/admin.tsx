@@ -14,10 +14,9 @@ import { useIdentity } from '../lib/identity-context'
 import { deleteEntry, getAdminEntries, setEntryStatus, type AdminEntry } from '../lib/submissions'
 import {
   CATEGORIES,
-  GRATITUDE_CATEGORIES,
   PARTICIPANT_TYPES,
+  PUBLIC_STATUSES,
   STATUSES,
-  WALL_CATEGORIES,
   type Status,
 } from '../lib/options'
 
@@ -28,8 +27,6 @@ export const Route = createFileRoute('/admin')({
   ssr: false,
   component: AdminPage,
 })
-
-const PUBLIC_CATEGORIES: string[] = [...WALL_CATEGORIES, ...GRATITUDE_CATEGORIES]
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
@@ -89,7 +86,7 @@ function LoginForm() {
     <Card>
       <Sprig className="h-7 w-28" />
       <h1 className="mt-3 font-display text-2xl font-bold text-plum">{mode === 'login' ? 'دخول إدارة المبادرة' : 'استعادة كلمة المرور'}</h1>
-      <p className="mt-1 text-sm text-ink/70">هذه الصفحة مخصصة لمشرفات المبادرة لمراجعة المشاركات قبل نشرها.</p>
+      <p className="mt-1 text-sm text-ink/70">هذه الصفحة مخصصة لمشرفات المبادرة لمتابعة المشاركات المنشورة تلقائيًا وإخفاء غير المناسب منها.</p>
       <form onSubmit={onSubmit} className="mt-6 grid gap-4">
         <label className="grid gap-1.5">
           <span className="text-sm font-medium text-plum">البريد الإلكتروني</span>
@@ -256,7 +253,7 @@ function toCsv(rows: AdminEntry[]) {
 function Dashboard({ email, onLogout }: { email: string; onLogout: () => void }) {
   const [entries, setEntries] = useState<AdminEntry[] | null>(null)
   const [error, setError] = useState('')
-  const [status, setStatus] = useState<Status | 'all'>('pending')
+  const [status, setStatus] = useState<Status | 'all'>('all')
   const [category, setCategory] = useState<string>('all')
   const [query, setQuery] = useState('')
   const [busyId, setBusyId] = useState<number | null>(null)
@@ -333,7 +330,7 @@ function Dashboard({ email, onLogout }: { email: string; onLogout: () => void })
         <div>
           <h1 className="font-display text-3xl font-bold text-plum">لوحة مراجعة المشاركات</h1>
           <p className="mt-1 text-ink/70">
-            مرحبًا <bdi dir="ltr">{email}</bdi> — راجعي المشاركات، وانشري المناسب منها على جدار الأثر الطيب وركن الامتنان.
+            مرحبًا <bdi dir="ltr">{email}</bdi> — تُنشر جميع المشاركات تلقائيًا. راجعيها بعد النشر وأخفي غير المناسب منها؛ المشاركات القديمة غير المراجعة ظاهرة أيضًا.
           </p>
         </div>
         <div className="flex gap-2">
@@ -389,7 +386,7 @@ function Dashboard({ email, onLogout }: { email: string; onLogout: () => void })
       ) : (
         <ul className="mt-6 grid gap-4">
           {filtered.map((e) => {
-            const isPublic = PUBLIC_CATEGORIES.includes(e.category)
+            const isPublic = PUBLIC_STATUSES.includes(e.status as Status)
             const busy = busyId === e.id
             return (
               <li key={e.id} className="rounded-3xl bg-ivory p-5 ring-1 ring-beige sm:p-6">
@@ -398,7 +395,6 @@ function Dashboard({ email, onLogout }: { email: string; onLogout: () => void })
                     {STATUSES[e.status as Status]}
                   </span>
                   <span className="rounded-full bg-cream px-3 py-1 text-plum ring-1 ring-beige">{CATEGORIES[e.category as keyof typeof CATEGORIES]}</span>
-                  {!isPublic && <span className="rounded-full bg-cream px-3 py-1 text-ink/60 ring-1 ring-beige">للإدارة فقط — لا تُنشر</span>}
                   <span className="text-ink/55">
                     {PARTICIPANT_TYPES[e.participantType as keyof typeof PARTICIPANT_TYPES]}
                     {e.name ? ` · ${e.name}` : ' · بدون اسم'}
@@ -410,23 +406,23 @@ function Dashboard({ email, onLogout }: { email: string; onLogout: () => void })
                 <div className="mt-4 flex flex-wrap gap-2">
                   {e.status !== 'approved' && (
                     <button disabled={busy} onClick={() => changeStatus(e.id, 'approved')} className="inline-flex items-center gap-1.5 rounded-full bg-moss px-4 py-2 text-sm text-white hover:opacity-90 disabled:opacity-60">
-                      <Check className="h-4 w-4" /> {isPublic ? 'موافقة ونشر' : 'تمت المراجعة'}
+                      <Check className="h-4 w-4" /> {isPublic ? 'تمت المراجعة — تبقى منشورة' : 'إعادة النشر'}
                     </button>
                   )}
                   {e.status !== 'rejected' && (
                     <button disabled={busy} onClick={() => changeStatus(e.id, 'rejected')} className="inline-flex items-center gap-1.5 rounded-full bg-cream px-4 py-2 text-sm text-plum ring-1 ring-beige hover:bg-beige/60 disabled:opacity-60">
-                      <EyeOff className="h-4 w-4" /> {e.status === 'approved' && isPublic ? 'إخفاء من الموقع' : 'عدم النشر'}
+                      <EyeOff className="h-4 w-4" /> إخفاء من الموقع
                     </button>
                   )}
                   {e.status !== 'pending' && (
                     <button disabled={busy} onClick={() => changeStatus(e.id, 'pending')} className="inline-flex items-center gap-1.5 rounded-full bg-cream px-4 py-2 text-sm text-plum ring-1 ring-beige hover:bg-beige/60 disabled:opacity-60">
-                      <RotateCcw className="h-4 w-4" /> إرجاع للمراجعة
+                      <RotateCcw className="h-4 w-4" /> غير مراجعة — تظهر للجميع
                     </button>
                   )}
                   <button disabled={busy} onClick={() => remove(e.id)} className="ms-auto inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm text-rosewood hover:bg-blush/50 disabled:opacity-60">
                     <Trash2 className="h-4 w-4" /> حذف
                   </button>
-                  {e.status === 'approved' && isPublic && <span className="self-center text-sm text-ink/50">💗 {e.hearts.toLocaleString('ar-SA')}</span>}
+                  {isPublic && <span className="self-center text-sm text-ink/50">💗 {e.hearts.toLocaleString('ar-SA')}</span>}
                 </div>
               </li>
             )
