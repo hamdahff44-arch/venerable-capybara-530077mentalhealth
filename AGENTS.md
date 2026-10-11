@@ -1,6 +1,6 @@
 # AGENTS.md
 
-An Arabic, right-to-left website for the «أثر طيب لصحة نفسية أفضل» mental well-being initiative at ابتدائية الفويلق (a girls' elementary school in Saudi Arabia). Visitors send messages, admins moderate them, and only approved messages appear publicly.
+An Arabic, right-to-left website for the «أثر طيب لصحة نفسية أفضل» mental well-being initiative at ابتدائية الفويلق (a girls' elementary school in Saudi Arabia). Visitors' submissions publish automatically, and admins may moderate them after publication.
 
 ## Stack
 
@@ -17,14 +17,14 @@ src/lib/submissions.ts       # all server functions (public submit/list/heart, a
 src/lib/identity-context.tsx # client auth state
 src/components/              # Header (sticky nav), Footer, Decor (Heart, Sprig, SectionTitle, RevealOnScroll, img()), EntryForm
 src/components/sections/     # one file per homepage section
-src/routes/index.tsx         # one-page homepage; the loader fetches approved entries
+src/routes/index.tsx         # one-page homepage; the loader fetches pending and approved entries
 src/routes/admin.tsx         # client-only (ssr:false) moderation panel: login, invite/recovery, review
 public/img/                  # AI-generated watercolor art; always serve it via img() → /.netlify/images
 ```
 
 ## Rules and decisions
 
-- **Moderation is mandatory.** Inserts always use `status: 'pending'`. Public queries must filter `status = 'approved'` and only the public categories (`WALL_CATEGORIES`, `GRATITUDE_CATEGORIES`). `activity_idea` and `suggestion` are never public.
+- **Publishing is automatic.** Inserts use `status: 'approved'`. Public queries include `pending` and `approved` (`PUBLIC_STATUSES`), never `rejected`, and have no entry-count limit. All five categories appear on the wall (`WALL_CATEGORIES`); gratitude also appears in its corner and activity ideas in the activities section. Preserve historical statuses and applied migrations. Admins may hide or republish entries after publication.
 - **Do not collect sensitive data.** Name is optional (first name only), and there are no email, phone or health fields. Keep it that way.
 - Admin server functions call `requireAdmin()`, which requires the Identity role `admin`. The first admin is invited and given the role in the Netlify UI (see README).
 - The `website` field is a honeypot. Hearts are counted on the server; localStorage only stops repeat hearts from one browser.

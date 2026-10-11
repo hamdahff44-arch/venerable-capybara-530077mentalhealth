@@ -1,7 +1,5 @@
 import { integer, pgTable, serial, text, timestamp, index } from 'drizzle-orm/pg-core'
 
-// Every public-facing submission starts as "pending" and only becomes visible
-// on the site after an administrator approves it.
 export const submissions = pgTable(
   'submissions',
   {

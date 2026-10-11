@@ -7,24 +7,25 @@ The website for the mental well-being initiative at **Al-Fuwailiq Elementary Sch
 - **Homepage**: the welcome hero and an introduction to the initiative.
 - **About the initiative (عن المبادرة)**: emotional well-being, kindness, positive communication, self-awareness and a supportive school environment.
 - **Mental well-being corner (ركن الصحة النفسية)**: an animated breathing exercise, a "how do you feel today?" check-in, tips for managing emotions, and flip cards for positive self-talk.
-- **Positive impact wall (جدار الأثر الطيب)**: approved kind words and encouraging messages, with category filters, a "random kind word" button, and hearts that visitors can send.
-- **Gratitude corner (ركن الامتنان)**: a thank-you form and the approved thank-you notes.
+- **Positive impact wall (جدار الأثر الطيب)**: automatically published submissions from all five categories, with category filters, a "random kind word" button, and hearts that visitors can send.
+- **Gratitude corner (ركن الامتنان)**: a thank-you form and automatically published thank-you notes.
 - **Participation form (شاركي معنا)**: optional name, participant type, category (kind word, encouragement, gratitude, activity idea, suggestion) and message.
-- **School activities (الأنشطة)**: activity ideas and an interactive 7-day kindness challenge. Progress is saved in the visitor's browser.
-- **Privacy and safety (الخصوصية)**: how submissions are reviewed and why sensitive information is never collected.
+- **School activities (الأنشطة)**: school activity ideas, visitor-submitted activity ideas, and an interactive 7-day kindness challenge. Progress is saved in the visitor's browser.
+- **Privacy and safety (الخصوصية)**: clear notice of immediate public publishing, post-publication admin review, and why sensitive information is never collected.
 - **Admin review panel (`/admin`)**: a protected page for reviewing, publishing, hiding, deleting and exporting submissions.
 
 ## Netlify Forms (`athar-tayeb`)
 
-Every submission from the participation form and the gratitude form is also saved in **Netlify Forms** under the form name `athar-tayeb`. Netlify detects the form at build time from the static file `public/__forms.html`, and the React form in `src/components/EntryForm.tsx` posts to that path with `fetch`. If you add or rename a field, update both files so the names match.
+Every submission from the participation form and the gratitude form is saved in Netlify Database first. The form also attempts to save an additional copy in **Netlify Forms** under the form name `athar-tayeb`. A database failure displays an error rather than claiming publication; a Forms-copy failure does not prevent database publication. Netlify detects the form at build time from the static file `public/__forms.html`, and the React form in `src/components/EntryForm.tsx` posts to that path with `fetch`. If you add or rename a field, update both files so the names match.
 
 To read submissions: Netlify dashboard → this project → **Forms** → **athar-tayeb**. Each entry has the name (or «بدون اسم»), participant type, category, message and send date.
 
-## How moderation works
+## How automatic publishing works
 
-1. Every submission is saved in the site's Netlify Database with the status **pending**.
-2. Nothing appears publicly until an admin approves it in `/admin`.
-3. Only *kind words*, *encouragement* and *gratitude* can be published. *Activity ideas* and *suggestions* are only ever visible to admins.
+1. Every new submission is saved in the existing Netlify Database with the status **approved** and becomes public immediately. The page refreshes its public entries after a successful submission.
+2. Existing **pending** submissions are public too, without rewriting their statuses, messages, or review history. **Rejected** submissions remain hidden and cannot receive public hearts.
+3. All five categories appear on the wall and in its filters. Gratitude also appears in the gratitude corner, and activity ideas also appear in the school activities section. Public queries have no entry-count limit and show the newest submissions first.
+4. Admins still sign in at `/admin` to review, hide, republish, delete, or export submissions. Marking an entry **pending** means it is unreviewed but still public; only **rejected** hides it. No existing data or migrations need to be changed for this policy.
 
 ### Setting up the first administrator
 

@@ -24,7 +24,7 @@ export function Gratitude({ entries }: { entries: PublicEntry[] }) {
               </span>
               <div>
                 <h3 className="font-display text-xl font-bold text-plum">اكتبي رسالة امتنان</h3>
-                <p className="text-sm text-ink/60">تُنشر بعد مراجعة الإدارة</p>
+                <p className="text-sm text-ink/60">تُنشر تلقائيًا وفورًا دون موافقة مسبقة</p>
               </div>
             </div>
             <EntryForm fixedCategory="gratitude" submitLabel="إرسال رسالة الشكر" variant="compact" />
@@ -36,7 +36,7 @@ export function Gratitude({ entries }: { entries: PublicEntry[] }) {
                 <div>
                   <Heart className="mx-auto h-10 w-10 text-rose" />
                   <p className="mt-3 font-display text-xl font-bold text-plum">رسائل الشكر ستظهر هنا</p>
-                  <p className="mt-1 text-ink/70">بعد مراجعة الإدارة لها. ابدئي بأول رسالة امتنان!</p>
+                  <p className="mt-1 text-ink/70">تُنشر تلقائيًا فور إرسالها. ابدئي بأول رسالة امتنان!</p>
                 </div>
               </div>
             ) : (
