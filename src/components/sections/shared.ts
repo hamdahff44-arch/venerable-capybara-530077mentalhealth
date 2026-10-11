@@ -9,6 +9,10 @@ export function useHearts(entries: PublicEntry[]) {
   const [given, setGiven] = useState<number[]>([])
 
   useEffect(() => {
+    setCounts(Object.fromEntries(entries.map((entry) => [entry.id, entry.hearts])))
+  }, [entries])
+
+  useEffect(() => {
     try {
       setGiven(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]'))
     } catch {

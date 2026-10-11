@@ -16,7 +16,7 @@ The website for the mental well-being initiative at **Al-Fuwailiq Elementary Sch
 
 ## Netlify Forms (`athar-tayeb`)
 
-Every submission from the participation form and the gratitude form is also saved in **Netlify Forms** under the form name `athar-tayeb`. Netlify detects the form at build time from the static file `public/__forms.html`, and the React form in `src/components/EntryForm.tsx` posts to that path with `fetch`. If you add or rename a field, update both files so the names match.
+The participation form and the gratitude form first save each submission in Netlify Database for moderation, then attempt an additional copy in **Netlify Forms** under the form name `athar-tayeb`. A failed additional copy does not undo the database submission or ask the visitor to submit it again. Netlify detects the form at build time from the static file `public/__forms.html`, and the React form in `src/components/EntryForm.tsx` posts to that path with `fetch`. If you add or rename a field, update both files so the names match.
 
 To read submissions: Netlify dashboard → this project → **Forms** → **athar-tayeb**. Each entry has the name (or «بدون اسم»), participant type, category, message and send date.
 
@@ -59,3 +59,5 @@ npx drizzle-kit generate --name <describe_change>
 ```
 
 Migrations in `netlify/database/migrations/` are applied automatically on deploy.
+
+To check TypeScript without building or deploying, run `pnpm exec tsc --noEmit`. The generated route tree is included so this also works in a fresh checkout.

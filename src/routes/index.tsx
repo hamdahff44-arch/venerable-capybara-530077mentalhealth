@@ -11,10 +11,10 @@ import { Gratitude } from '../components/sections/Gratitude'
 import { Participate } from '../components/sections/Participate'
 import { Activities } from '../components/sections/Activities'
 import { Privacy } from '../components/sections/Privacy'
-import { getPublishedEntries } from '../lib/submissions'
+import { getPublishedEntries, type PublishedEntries } from '../lib/submissions'
 
 export const Route = createFileRoute('/')({
-  loader: async () => {
+  loader: async (): Promise<PublishedEntries> => {
     try {
       return await getPublishedEntries()
     } catch {
