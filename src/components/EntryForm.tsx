@@ -1,5 +1,6 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { CheckCircle2, Loader2, Send } from 'lucide-react'
+import { useRouter } from '@tanstack/react-router'
 import { submitEntry } from '../lib/submissions'
 import { CATEGORIES, MESSAGE_MAX, NAME_MAX, PARTICIPANT_TYPES, type Category } from '../lib/options'
 
@@ -16,6 +17,7 @@ type Props = {
 }
 
 export function EntryForm({ fixedCategory, submitLabel = 'إرسال المشاركة 💗', variant = 'full' }: Props) {
+  const router = useRouter()
   const [category, setCategory] = useState<Category>(fixedCategory ?? 'kind_word')
   const [message, setMessage] = useState('')
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
@@ -49,9 +51,13 @@ export function EntryForm({ fixedCategory, submitLabel = 'إرسال المشا�
     const now = new Date()
 
     try {
+      await submitEntry({
+        data: { name, participantType, category, recipient, message, website: botField },
+      })
+
       // Netlify Forms keeps the submission and shows it under Forms → athar-tayeb in the dashboard.
       // Labels are sent in Arabic so the dashboard entries are readable as-is.
-      const res = await fetch(NETLIFY_FORM_ENDPOINT, {
+      await fetch(NETLIFY_FORM_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
@@ -66,19 +72,16 @@ export function EntryForm({ fixedCategory, submitLabel = 'إرسال المشا�
           submittedAt: `${now.toLocaleString('ar-SA', { dateStyle: 'full', timeStyle: 'short' })} (${now.toISOString()})`,
         }).toString(),
       })
-      if (!res.ok) throw new Error(`Netlify Forms responded with ${res.status}`)
-
-      // Also queue it for moderation so approved messages can appear on the public walls.
-      // The Netlify Forms copy is already saved, so a failure here shouldn't block the visitor.
-      await submitEntry({
-        data: { name, participantType, category, recipient, message, website: botField },
-      }).catch((err) => console.error('Failed to queue submission for moderation', err))
+        .then((response) => {
+          if (!response.ok) throw new Error('Netlify Forms copy failed')
+        })
+        .catch(() => console.warn('Could not save the additional Netlify Forms copy'))
 
       setState('done')
       setMessage('')
       setAnonymous(false)
-    } catch (err) {
-      console.error(err)
+      await router.invalidate().catch(() => console.warn('Could not refresh published submissions'))
+    } catch {
       setError('تعذّر إرسال مشاركتك الآن. فضلاً تحققي من اتصالك بالإنترنت ثم حاولي مرة أخرى 💗')
       setState('error')
     } finally {

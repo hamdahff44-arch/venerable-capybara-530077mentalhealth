@@ -27,6 +27,8 @@ export type PublicEntry = {
 
 export type AdminEntry = PublicEntry & { status: string; reviewedAt: string | null }
 
+export type PublishedEntries = { wall: PublicEntry[]; gratitude: PublicEntry[] }
+
 const keys = <T extends object>(o: T) => Object.keys(o) as [keyof T & string, ...(keyof T & string)[]]
 
 const optionalText = (max: number) =>
@@ -75,7 +77,7 @@ export const submitEntry = createServerFn({ method: 'POST' })
     return { ok: true }
   })
 
-export const getPublishedEntries = createServerFn({ method: 'GET' }).handler(async () => {
+export const getPublishedEntries = createServerFn({ method: 'GET' }).handler(async (): Promise<PublishedEntries> => {
   const rows = await db
     .select()
     .from(submissions)
@@ -85,8 +87,7 @@ export const getPublishedEntries = createServerFn({ method: 'GET' }).handler(asy
         inArray(submissions.category, [...WALL_CATEGORIES, ...GRATITUDE_CATEGORIES]),
       ),
     )
-    .orderBy(desc(submissions.reviewedAt))
-    .limit(120)
+    .orderBy(desc(submissions.createdAt), desc(submissions.id))
   const entries = rows.map(toPublic)
   return {
     wall: entries.filter((e) => (WALL_CATEGORIES as string[]).includes(e.category)),
@@ -100,7 +101,13 @@ export const sendHeart = createServerFn({ method: 'POST' })
     const [row] = await db
       .update(submissions)
       .set({ hearts: sql`${submissions.hearts} + 1` })
-      .where(and(eq(submissions.id, data.id), eq(submissions.status, 'approved')))
+      .where(
+        and(
+          eq(submissions.id, data.id),
+          eq(submissions.status, 'approved'),
+          inArray(submissions.category, [...WALL_CATEGORIES, ...GRATITUDE_CATEGORIES]),
+        ),
+      )
       .returning({ hearts: submissions.hearts })
     return { hearts: row?.hearts ?? 0 }
   })
