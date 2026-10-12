@@ -70,7 +70,7 @@ export const submitEntry = createServerFn({ method: 'POST' })
       category: data.category,
       recipient: data.category === 'gratitude' ? data.recipient : null,
       message: data.message,
-      status: 'pending',
+      status: 'approved',
     })
     return { ok: true }
   })
